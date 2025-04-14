@@ -17,6 +17,9 @@ classifiers = [
 [project.urls]
 Changelog = "https://github.com/DiogenesAnalytics/rack/releases"
 
+[tool.poetry.dependencies]
+flask = ">=3.1.0"
+
 [tool.poetry.group.dev]
 optional = true
 
@@ -33,6 +36,7 @@ flake8-rst-docstrings = ">=0.2.5"
 furo = ">=2021.11.12"
 isort = ">=5.10.1"
 mypy = ">=0.930"
+myst-parser = {version = ">=0.16.1"}
 nox = ">=2023.4.22"
 nox-poetry = ">=1.0.3"
 pep8-naming = ">=0.12.1"
@@ -41,8 +45,8 @@ pre-commit-hooks = ">=4.1.0"
 pytest = ">=6.2.5"
 pyupgrade = ">=2.29.1"
 typeguard = ">=2.13.3"
+types-flask = ">=1.1.6"
 xdoctest = {extras = ["colors"], version = ">=0.15.10"}
-myst-parser = {version = ">=0.16.1"}
 
 [tool.coverage.paths]
 source = ["src", "*/site-packages"]
