@@ -103,15 +103,19 @@ def run_linting_tools(session: nox.Session) -> None:
     session.run("deptry", "src/")
 
 
-def install_and_run_tests(session: nox.Session) -> None:
-    """Helper function to install dependencies and run tests."""
-    # Install Nox if not already installed
-    session.install("nox")
+def install_project(session: nox.Session, with_dev: bool = True) -> None:
+    """Install the project using Poetry."""
+    session.install("poetry", external=True)
 
-    # Install test dependencies
-    session.install("pytest")
+    poetry_args = ["install"]
+    if with_dev:
+        poetry_args.extend(["--with", "dev"])
 
-    # Run the tests (assuming pytest is used)
+    session.run("poetry", *poetry_args, external=True)
+
+
+def run_tests(session: nox.Session) -> None:
+    """Run the test suite using pytest."""
     session.run("pytest")
 
 
@@ -140,32 +144,28 @@ def setup_python(session: nox.Session) -> None:
 @nox.session()
 def test_default_version(session: nox.Session) -> None:
     """Run tests using pytest on the default Python version."""
-    install_and_run_tests(session)
+    install_project(session)
+    run_tests(session)
 
 
 @nox.session(python=PROJECT_PYTHON_VERSIONS)
 def test_all_versions(session: nox.Session) -> None:
     """Run tests using pytest on all specified Python versions."""
-    install_and_run_tests(session)
+    install_project(session)
+    run_tests(session)
 
 
 @nox.session()
 def lint_default_version(session: nox.Session) -> None:
     """Run all linting tools on the default Python version."""
-    # install all lint deps
-    install_lint_deps(session)
-
-    # run all linting tools
+    install_project(session)
     run_linting_tools(session)
 
 
 @nox.session(python=PROJECT_PYTHON_VERSIONS)
 def lint_all_versions(session: nox.Session) -> None:
     """Run all linting tools on all specified Python version."""
-    # install all lint deps
-    install_lint_deps(session)
-
-    # run all linting tools
+    install_project(session)
     run_linting_tools(session)
 
 
