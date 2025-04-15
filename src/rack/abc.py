@@ -39,8 +39,16 @@ class Website(ABC):
 
     def __repr__(self) -> str:
         """Return a developer-friendly string representation of the Website."""
+        # get list of routes from app.url_map
+        routes = [
+            f"{rule.endpoint!r} -> {rule}" for rule in self.app.url_map.iter_rules()
+        ]
+        routes_str = "\n    ".join(routes) if routes else "No routes registered"
+
+        # build and return the final representation string
         return (
             f"<{self.__class__.__name__} "
             f"static={self.app.static_folder!r} "
-            f"template={self.app.template_folder!r}>"
+            f"template={self.app.template_folder!r} "
+            f"routes:\n    {routes_str}>"
         )
