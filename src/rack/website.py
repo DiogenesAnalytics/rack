@@ -76,6 +76,8 @@ class BasicWebsite(Website):
 
     def __init__(self, app: Optional[Flask] = None) -> None:
         """Initialize the website and configure static/template paths."""
+        # if no app is provided, create a new Flask app with the class name
+        app = app or Flask(self.__class__.__name__)
         super().__init__(app)
 
         static_path, template_path = self.get_default_paths()
