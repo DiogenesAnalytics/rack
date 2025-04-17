@@ -1,7 +1,7 @@
 .PHONY: all build-jupyter build-tests build-final jupyter pause address containers \
         list-containers stop-containers restart-containers lint tests pytest \
         deptry isort black flake8 mypy nox shell clear-nb clean install-act \
-        check-act run-act-tests test-py-version
+        check-act run-act-tests test-py-version rack
 
 # Usage:
 # make                    # just alias to containers command
@@ -31,6 +31,7 @@
 # make check-act          # check if act is installed
 # make run-cat-tests      # run github action tests locally
 # make test-py-version    # print default python test version
+# make rack               # run rack builtin server
 
 
 ################################################################################
@@ -48,6 +49,7 @@ NOTEBOOKS  := $(shell find ${INTDR} -name "*.ipynb" -not -path "*/.ipynb_*/*")
 
 # docker-related variables
 JPTCTNR = jupyter.${DCTNR}
+RCKCTNR = ${DCTNR}.server
 SRCPATH = /usr/local/src/rack
 DCKR_PULL ?= true
 DCKR_NOCACHE ?= false
@@ -131,21 +133,24 @@ pause:
 # get containerized server address
 address:
 	@ if [ -f "${CURRENTDIR}/.running_containers" ]; then \
-	while read container; do \
-	  if echo "$${container}" | grep -q "${JPTCTNR}" ; then \
-	    echo "Server address: $$(docker logs $${container} 2>&1 | \
-	          grep http://127.0.0.1 | tail -n 1 | \
-	          sed s/:8888/:$$(docker port $${container} | \
-	          grep '0.0.0.0:' | awk '{print $$3}' | sed 's/0.0.0.0://g')/g | \
-	          tr -d '[:blank:]')"; \
-	  else \
-	    echo "Could not find running container: ${JPTCTNR}." \
-	         "Try running: make list-containers"; \
-	  fi \
-	done < "${CURRENTDIR}/.running_containers"; \
-	else \
-	  echo ".running_containers file not found. Is a Docker container running?"; \
-	fi
+		while read container; do \
+		  if echo "$${container}" | grep -q "${JPTCTNR}"; then \
+		    echo "Jupyter server address: $$(docker logs $${container} 2>&1 | \
+		          grep http://127.0.0.1 | tail -n 1 | \
+		          sed s/:8888/:$$(docker port $${container} | \
+		          grep '0.0.0.0:' | awk '{print $$3}' | sed 's/0.0.0.0://g')/g | \
+		          tr -d '[:blank:]')"; \
+		  elif echo "$${container}" | grep -q "${RCKCTNR}"; then \
+		    echo "Rack server address: http://0.0.0.0:$$(docker port ${RCKCTNR} | \
+		          grep '0.0.0.0:' | awk '{print $$3'} | sed 's/0.0.0.0://g')"; \
+		  else \
+		    echo "Could not find running container: $${container}." \
+		         "Try running: make list-containers"; \
+		  fi \
+		done < "${CURRENTDIR}/.running_containers"; \
+		else \
+		  echo ".running_containers file not found. Is a Docker container running?"; \
+		fi
 
 # launch all docker containers
 containers: jupyter pause address
@@ -246,3 +251,30 @@ run-act-tests: check-act
 # get default python version
 test-py-version:
 	@ ${DCKRTST} ${TSTIMG_USED} python --version
+
+# run rack builtin server
+rack:
+	@ if [ -z "$(builtin)" ]; then  \
+	  echo -n "❌ Error: Missing required variable 'builtin'. "; \
+		echo "Use 'make rack builtin=BasicWebsite'"; \
+	  exit 1; \
+	fi && \
+	if ! docker ps --format={{.Names}} | grep -q "${RCKCTNR}"; then \
+	  echo "Launching Rack in Docker container -> ${RCKCTNR} ..."; \
+	  docker run -d \
+	             --rm \
+	             --name ${RCKCTNR} \
+	             -v ${CURRENTDIR}:${SRCPATH} \
+	             -p 5000 \
+	             ${TSTIMG_USED} \
+	               poetry run rack run \
+	                 --builtin=$(builtin) \
+	                 --host=0.0.0.0 \
+	                 --port=5000 \
+	                 $(debug) && \
+	  if ! grep -sq "${RCKCTNR}" "${CURRENTDIR}/.running_containers"; then \
+	    echo "${RCKCTNR}" >> .running_containers; \
+	  fi \
+	else \
+	  echo "Container already running: ${RCKCTNR}. Try setting DCTNR manually."; \
+	fi
