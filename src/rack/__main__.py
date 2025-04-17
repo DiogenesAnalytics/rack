@@ -1,8 +1,32 @@
 """Command-line interface for rack."""
 
+from pathlib import Path
+from typing import Any
+from typing import Callable
+
 import click
 
+import rack
 from rack.utils import discover_websites
+
+
+DEFAULT_RACK_PATH = Path(rack.__file__).parent
+
+
+def get_base_path(path: str) -> Path:
+    """Helper function to determine the base path for discovering websites."""
+    return Path(path).resolve()
+
+
+def path_option(func: Callable[..., Any]) -> Callable[..., Any]:
+    """A decorator that adds the '--path' option to a CLI command."""
+    return click.option(
+        "--path",
+        default=DEFAULT_RACK_PATH,
+        show_default=True,
+        type=click.Path(exists=True, file_okay=False, dir_okay=True),
+        help="Path to the directory to scan for website implementations.",
+    )(func)
 
 
 @click.group(invoke_without_command=True, no_args_is_help=True)
@@ -12,10 +36,14 @@ def main() -> None:
 
 
 @main.command("list-builtins")
-def list_builtins() -> None:
+@path_option
+def list_builtins(path: Path) -> None:
     """Lists all built-in Website implementations."""
     click.echo("Available built-in website implementations:")
-    for cls in discover_websites():
+
+    # Use the helper function to resolve the base path
+    base_path = get_base_path(str(path))
+    for cls in discover_websites(base_path):
         click.echo(f" - {cls.__name__}")
 
 
@@ -29,7 +57,10 @@ def list_builtins() -> None:
 @click.option("--port", default=5000, help="Port to run on.")
 @click.option("--debug", is_flag=True, help="Enable debug mode.")
 @click.option("--test", is_flag=True, help="Run in test mode.")
-def run(builtin: str, host: str, port: int, debug: bool, test: bool) -> None:
+@path_option
+def run(
+    builtin: str, host: str, port: int, debug: bool, test: bool, path: Path
+) -> None:
     """Run a Website implementation — either built-in or from app.py/main.py."""
     # check for test option
     if test:
@@ -42,7 +73,9 @@ def run(builtin: str, host: str, port: int, debug: bool, test: bool) -> None:
 
     # check for builtin option
     elif builtin:
-        implementations = {cls.__name__: cls for cls in discover_websites()}
+        base_path = get_base_path(str(path))
+        implementations = {cls.__name__: cls for cls in discover_websites(base_path)}
+
         if builtin not in implementations:
             click.echo(f"❌ Built-in implementation {builtin!r} not found.\n")
             click.echo("✅ Available options:")

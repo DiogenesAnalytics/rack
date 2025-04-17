@@ -1,5 +1,8 @@
 """Configuration file for pytest."""
 
+from pathlib import Path
+from textwrap import dedent
+
 import pytest
 
 
@@ -11,3 +14,38 @@ def pytest_configure(config: pytest.Config) -> None:
     config.addinivalue_line("markers", "utils: utils module tests.")
     config.addinivalue_line("markers", "feature: feature module tests.")
     config.addinivalue_line("markers", "website: website module tests.")
+
+
+@pytest.fixture
+def mock_rack_directory(tmp_path: Path) -> Path:
+    """Creates a temporary mock 'rack' directory with Python files."""
+    # Create a mock directory structure
+    mock_dir = tmp_path / "rack"
+    mock_dir.mkdir()
+
+    # Create mock Python files
+    mock_file_1 = mock_dir / "website_1.py"
+    mock_file_1.write_text(
+        dedent(
+            """
+        from rack.website import Website
+
+        class MyWebsite(Website):
+            pass
+    """
+        )
+    )
+
+    mock_file_2 = mock_dir / "website_2.py"
+    mock_file_2.write_text(
+        dedent(
+            """
+        from rack.website import Website
+
+        class AnotherWebsite(Website):
+            pass
+    """
+        )
+    )
+
+    return mock_dir

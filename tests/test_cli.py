@@ -1,5 +1,7 @@
 """Tests for module rack.__main__."""
 
+from pathlib import Path
+
 import pytest
 from click.testing import CliRunner
 
@@ -16,18 +18,19 @@ def test_version_option() -> None:
 
 
 @pytest.mark.cli
-def test_list_builtins() -> None:
+def test_list_builtins(mock_rack_directory: Path) -> None:
     """Test the 'list-builtins' command."""
     runner = CliRunner()
-    result = runner.invoke(main, ["list-builtins"])
+    result = runner.invoke(main, ["list-builtins", f"--path={mock_rack_directory}"])
 
     assert result.exit_code == 0
     assert "Available built-in website implementations:" in result.output
-    assert "BasicWebsite" in result.output
+    assert "MyWebsite" in result.output
+    assert "AnotherWebsite" in result.output
 
 
 @pytest.mark.cli
-def test_run_with_test_mode() -> None:
+def test_run_with_test_mode(mock_rack_directory: Path) -> None:
     """Test the 'run' command with the --test flag."""
     runner = CliRunner()
     result = runner.invoke(
@@ -36,26 +39,27 @@ def test_run_with_test_mode() -> None:
             "run",
             "--test",
             "--builtin",
-            "BasicWebsite",
+            "MyWebsite",
             "--host",
             "127.0.0.1",
             "--port",
             "5000",
             "--debug",
+            f"--path={mock_rack_directory}",
         ],
     )
 
     assert result.exit_code == 0
     assert "⚡ Test mode: Skipping server startup" in result.output
     assert "🛠️ Diagnostic Info:" in result.output
-    assert " - Built-in: BasicWebsite" in result.output
+    assert " - Built-in: MyWebsite" in result.output
     assert " - Host: 127.0.0.1" in result.output
     assert " - Port: 5000" in result.output
     assert " - Debug: Enabled" in result.output
 
 
 @pytest.mark.cli
-def test_run_with_invalid_builtin() -> None:
+def test_run_with_invalid_builtin(mock_rack_directory: Path) -> None:
     """Test the 'run' command with an invalid built-in to ensure it fails."""
     runner = CliRunner()
     result = runner.invoke(
@@ -68,6 +72,7 @@ def test_run_with_invalid_builtin() -> None:
             "127.0.0.1",
             "--port",
             "5000",
+            f"--path={mock_rack_directory}",
         ],
     )
 
