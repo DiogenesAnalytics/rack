@@ -8,11 +8,12 @@ from pathlib import Path
 from typing import Iterator
 from typing import List
 from typing import Type
+from typing import Union
 
 from rack.website import Website
 
 
-def resolve_root_path(base: str | Path) -> Path:
+def resolve_root_path(base: Union[str, Path]) -> Path:
     """Resolve the root path to scan for Python modules."""
     path = Path(base).resolve()
     if not path.exists():
@@ -45,7 +46,7 @@ def find_website_subclasses(mod: types.ModuleType) -> Iterator[Type[Website]]:
             yield obj
 
 
-def discover_websites(base_path: str | Path) -> Iterator[Type[Website]]:
+def discover_websites(base_path: Union[str, Path]) -> Iterator[Type[Website]]:
     """Discover all subclasses of `Website`."""
     root = resolve_root_path(base_path)
     for file in scan_python_files(root):
