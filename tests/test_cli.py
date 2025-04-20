@@ -24,7 +24,7 @@ def test_list_builtins(mock_rack_directory: Path) -> None:
     result = runner.invoke(main, ["list-builtins", f"--path={mock_rack_directory}"])
 
     assert result.exit_code == 0
-    assert "Available built-in website implementations:" in result.output
+    assert "Available built-in site implementations:" in result.output
     assert "MyWebsite" in result.output
     assert "AnotherWebsite" in result.output
 

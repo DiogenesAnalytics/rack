@@ -1,4 +1,4 @@
-"""Defines the core structure for website implementations."""
+"""Defines the core structure for site implementations."""
 
 from abc import ABC
 from abc import abstractmethod
@@ -17,11 +17,11 @@ from rack.feature import IndexRoute
 from rack.feature import Route
 
 
-class Website(ABC):
-    """Abstract base class for all website implementations."""
+class Site(ABC):
+    """Abstract base class for all site implementations."""
 
     def __init__(self, app: Optional[Flask] = None):
-        """Initialize the website. Accepts an optional Flask app."""
+        """Initialize the site. Accepts an optional Flask app."""
         # setup flask
         self.app = app or Flask(__name__)
 
@@ -55,7 +55,7 @@ class Website(ABC):
         self.app.run(**kwargs)
 
     def __repr__(self) -> str:
-        """Return a developer-friendly string representation of the Website."""
+        """Return a developer-friendly string representation of the Site."""
         # get list of routes from app.url_map
         routes = [
             f"{rule.endpoint!r} -> {rule}" for rule in self.app.url_map.iter_rules()
@@ -71,11 +71,11 @@ class Website(ABC):
         )
 
 
-class BasicWebsite(Website):
-    """A minimal concrete implementation of the Website ABC."""
+class BasicSite(Site):
+    """A minimal concrete implementation of the Site ABC."""
 
     def __init__(self, app: Optional[Flask] = None) -> None:
-        """Initialize the website and configure static/template paths."""
+        """Initialize the site and configure static/template paths."""
         # if no app is provided, create a new Flask app with the class name
         app = app or Flask(self.__class__.__name__)
         super().__init__(app)
@@ -86,8 +86,8 @@ class BasicWebsite(Website):
     def get_default_paths(self) -> Tuple[Path, Path]:
         """Return the default static and template folder paths."""
         base_path = Path(__file__).parent
-        static_path = base_path / "static" / "website" / "basic"
-        template_path = base_path / "templates" / "website" / "basic"
+        static_path = base_path / "static" / "site" / "basic"
+        template_path = base_path / "templates" / "site" / "basic"
         return static_path, template_path
 
     @property

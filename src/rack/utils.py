@@ -10,7 +10,7 @@ from typing import List
 from typing import Type
 from typing import Union
 
-from rack.website import Website
+from rack.site import Site
 
 
 def resolve_root_path(base: Union[str, Path]) -> Path:
@@ -38,17 +38,17 @@ def load_module_from_file(file_path: Path) -> types.ModuleType:
     raise ImportError(f"Could not load module from {file_path}")
 
 
-def find_website_subclasses(mod: types.ModuleType) -> Iterator[Type[Website]]:
-    """Find all subclasses of Website in the given module."""
+def find_site_subclasses(mod: types.ModuleType) -> Iterator[Type[Site]]:
+    """Find all subclasses of Site in the given module."""
     for _, obj in inspect.getmembers(mod, inspect.isclass):
         bases = [base.__name__ for base in getattr(obj, "__bases__", [])]
-        if "Website" in bases and obj.__name__ != "Website":
+        if "Site" in bases and obj.__name__ != "Site":
             yield obj
 
 
-def discover_websites(base_path: Union[str, Path]) -> Iterator[Type[Website]]:
-    """Discover all subclasses of `Website`."""
+def discover_sites(base_path: Union[str, Path]) -> Iterator[Type[Site]]:
+    """Discover all subclasses of `Site`."""
     root = resolve_root_path(base_path)
     for file in scan_python_files(root):
         mod = load_module_from_file(file)
-        yield from find_website_subclasses(mod)
+        yield from find_site_subclasses(mod)

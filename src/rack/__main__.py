@@ -7,14 +7,14 @@ from typing import Callable
 import click
 
 import rack
-from rack.utils import discover_websites
+from rack.utils import discover_sites
 
 
 DEFAULT_RACK_PATH = Path(rack.__file__).parent
 
 
 def get_base_path(path: str) -> Path:
-    """Helper function to determine the base path for discovering websites."""
+    """Helper function to determine the base path for discovering sites."""
     return Path(path).resolve()
 
 
@@ -25,7 +25,7 @@ def path_option(func: Callable[..., Any]) -> Callable[..., Any]:
         default=DEFAULT_RACK_PATH,
         show_default=True,
         type=click.Path(exists=True, file_okay=False, dir_okay=True),
-        help="Path to the directory to scan for website implementations.",
+        help="Path to the directory to scan for site implementations.",
     )(func)
 
 
@@ -38,12 +38,12 @@ def main() -> None:
 @main.command("list-builtins")
 @path_option
 def list_builtins(path: Path) -> None:
-    """Lists all built-in Website implementations."""
-    click.echo("Available built-in website implementations:")
+    """Lists all built-in Site implementations."""
+    click.echo("Available built-in site implementations:")
 
     # Use the helper function to resolve the base path
     base_path = get_base_path(str(path))
-    for cls in discover_websites(base_path):
+    for cls in discover_sites(base_path):
         click.echo(f" - {cls.__name__}")
 
 
@@ -51,7 +51,7 @@ def list_builtins(path: Path) -> None:
 @click.option(
     "--builtin",
     type=str,
-    help="Name of the built-in Website implementation to run (e.g., BasicWebsite).",
+    help="Name of the built-in Site implementation to run (e.g., BasicSite).",
 )
 @click.option("--host", default="127.0.0.1", help="Host to run on.")
 @click.option("--port", default=5000, help="Port to run on.")
@@ -61,7 +61,7 @@ def list_builtins(path: Path) -> None:
 def run(
     builtin: str, host: str, port: int, debug: bool, test: bool, path: Path
 ) -> None:
-    """Run a Website implementation — either built-in or from app.py/main.py."""
+    """Run a Site implementation — either built-in or from app.py/main.py."""
     # check for test option
     if test:
         click.echo("⚡ Test mode: Skipping server startup")
@@ -74,7 +74,7 @@ def run(
     # check for builtin option
     elif builtin:
         base_path = get_base_path(str(path))
-        implementations = {cls.__name__: cls for cls in discover_websites(base_path)}
+        implementations = {cls.__name__: cls for cls in discover_sites(base_path)}
 
         if builtin not in implementations:
             click.echo(f"❌ Built-in implementation {builtin!r} not found.\n")

@@ -13,7 +13,7 @@ def pytest_configure(config: pytest.Config) -> None:
     config.addinivalue_line("markers", "cli: __main__ module tests.")
     config.addinivalue_line("markers", "utils: utils module tests.")
     config.addinivalue_line("markers", "feature: feature module tests.")
-    config.addinivalue_line("markers", "website: website module tests.")
+    config.addinivalue_line("markers", "site: site module tests.")
 
 
 @pytest.fixture
@@ -28,9 +28,9 @@ def mock_rack_directory(tmp_path: Path) -> Path:
     mock_file_1.write_text(
         dedent(
             """
-        from rack.website import Website
+        from rack.site import Site
 
-        class MyWebsite(Website):
+        class MyWebsite(Site):
             pass
     """
         )
@@ -40,9 +40,9 @@ def mock_rack_directory(tmp_path: Path) -> Path:
     mock_file_2.write_text(
         dedent(
             """
-        from rack.website import Website
+        from rack.site import Site
 
-        class AnotherWebsite(Website):
+        class AnotherWebsite(Site):
             pass
     """
         )

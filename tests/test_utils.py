@@ -5,12 +5,12 @@ from pathlib import Path
 
 import pytest
 
-from rack.utils import discover_websites
-from rack.utils import find_website_subclasses
+from rack.site import Site
+from rack.utils import discover_sites
+from rack.utils import find_site_subclasses
 from rack.utils import load_module_from_file
 from rack.utils import resolve_root_path
 from rack.utils import scan_python_files
-from rack.website import Website
 
 
 @pytest.mark.utils
@@ -55,31 +55,31 @@ def test_load_module_from_file_invalid(mock_rack_directory: Path) -> None:
 
 
 @pytest.mark.utils
-def test_find_website_subclasses() -> None:
-    """Test Website subclass found in module."""
+def test_find_site_subclasses() -> None:
+    """Test Site subclass found in module."""
     module = types.ModuleType("mock_module")
-    mock_class = type("MockWebsite", (Website,), {})
+    mock_class = type("MockWebsite", (Site,), {})
     setattr(module, "MockWebsite", mock_class)  # noqa: B010
 
-    subclasses = list(find_website_subclasses(module))  # Wrap in list
+    subclasses = list(find_site_subclasses(module))  # Wrap in list
     assert len(subclasses) == 1
     assert subclasses[0] == mock_class
 
 
 @pytest.mark.utils
-def test_find_website_subclasses_excludes_base_class() -> None:
-    """Test ABC Website should be excluded."""
+def test_find_site_subclasses_excludes_base_class() -> None:
+    """Test ABC site should be excluded."""
     module = types.ModuleType("mock_module")
-    setattr(module, "Website", Website)  # noqa: B010
+    setattr(module, "Site", Site)  # noqa: B010
 
-    subclasses = list(find_website_subclasses(module))  # Wrap in list
+    subclasses = list(find_site_subclasses(module))  # Wrap in list
     assert len(subclasses) == 0
 
 
 @pytest.mark.utils
-def test_discover_websites(mock_rack_directory: Path) -> None:
-    """Test mock package Website subclasses discovered."""
-    websites = list(discover_websites(mock_rack_directory))
-    assert len(websites) == 2  # We created two website subclasses
+def test_discover_sites(mock_rack_directory: Path) -> None:
+    """Test mock package Site subclasses discovered."""
+    websites = list(discover_sites(mock_rack_directory))
+    assert len(websites) == 2  # We created two site subclasses
     assert any(w.__name__ == "MyWebsite" for w in websites)
     assert any(w.__name__ == "AnotherWebsite" for w in websites)
