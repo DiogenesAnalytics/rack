@@ -5,9 +5,9 @@ import inspect
 import pytest
 from flask import Flask
 
+from rack.feature import DynamicRoute
 from rack.feature import Feature
 from rack.feature import IndexRoute
-from rack.feature import Route
 
 
 @pytest.mark.feature
@@ -18,7 +18,7 @@ def test_route_registers_to_app() -> None:
     def hello() -> str:
         return "Hello"
 
-    route = Route("/hello", hello)
+    route = DynamicRoute("/hello", hello)
     route.register(app)
 
     client = app.test_client()
@@ -34,8 +34,8 @@ def test_route_repr() -> None:
     def test_func() -> str:
         return "Test"
 
-    route = Route("/test", test_func)
-    assert repr(route) == "<Route path=/test view_func=test_func>"
+    route = DynamicRoute("/test", test_func)
+    assert repr(route) == "<DynamicRoute path=/test view_func=test_func>"
 
 
 @pytest.mark.feature
@@ -46,7 +46,7 @@ def test_index_route_registers_to_root() -> None:
     def index() -> str:
         return "Index"
 
-    route = IndexRoute(index)
+    route = IndexRoute(view_func=index)
     route.register(app)
 
     client = app.test_client()
@@ -62,8 +62,8 @@ def test_index_route_repr() -> None:
     def index_func() -> str:
         return "Index"
 
-    route = IndexRoute(index_func)
-    assert repr(route) == "<Route path=/ view_func=index_func>"
+    route = IndexRoute(view_func=index_func)
+    assert repr(route) == "<AutoRoute path=/ type=DynamicRoute>"
 
 
 @pytest.mark.feature
