@@ -12,9 +12,9 @@ from typing import Union
 from flask import Flask
 from flask import render_template
 
-from rack.feature import Feature
-from rack.feature import IndexRoute
-from rack.feature import Route
+from rack.feature.base import Feature
+from rack.feature.route import IndexRoute
+from rack.feature.route import Route
 
 
 class Site(ABC):

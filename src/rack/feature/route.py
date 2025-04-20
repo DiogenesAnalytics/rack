@@ -1,4 +1,4 @@
-"""Defines the core structure for modular features."""
+"""Defines the core structure for route features."""
 
 from abc import ABC
 from abc import abstractmethod
@@ -16,19 +16,7 @@ from flask import Response
 from flask import render_template
 from flask import send_from_directory
 
-
-class Feature(ABC):
-    """Abstract base class for modular features."""
-
-    @abstractmethod
-    def register(self, app: Flask) -> None:
-        """Register routes, blueprints, context processors, etc."""
-        pass
-
-    @abstractmethod
-    def __repr__(self) -> str:
-        """Return a string representation of the feature."""
-        pass
+from rack.feature.base import Feature
 
 
 class Route(Feature, ABC):

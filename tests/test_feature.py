@@ -5,9 +5,9 @@ import inspect
 import pytest
 from flask import Flask
 
-from rack.feature import DynamicRoute
-from rack.feature import Feature
-from rack.feature import IndexRoute
+from rack.feature.base import Feature
+from rack.feature.route import DynamicRoute
+from rack.feature.route import IndexRoute
 
 
 @pytest.mark.feature
