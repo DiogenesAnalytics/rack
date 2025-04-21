@@ -87,16 +87,16 @@ class TemplateRoute(DynamicRoute):
     """A route that renders a template."""
 
     def __init__(
-        self, path: str, template_name: str, context: Optional[Dict[str, Any]] = None
+        self, path: str, template_file: str, context: Optional[Dict[str, Any]] = None
     ) -> None:
         """Initialize the TemplateRoute with path, template, and context."""
-        self._template_name = template_name
+        self._template_file = template_file
         self._context = context or {}
 
         # define the view function inline
         def render_template_func() -> str:
             """Render the template with the provided context."""
-            return render_template(self._template_name, **self._context)
+            return render_template(self._template_file, **self._context)
 
         super().__init__(path, render_template_func)
 
@@ -113,7 +113,7 @@ class TemplateRoute(DynamicRoute):
         context_summary = self._summarize_context()
         return (
             f"<TemplateRoute path={self.path} "
-            f"template={self._template_name} "
+            f"template={self._template_file} "
             f"context={{ {context_summary} }}>"
         )
 

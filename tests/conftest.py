@@ -14,6 +14,7 @@ def pytest_configure(config: pytest.Config) -> None:
     config.addinivalue_line("markers", "utils: utils module tests.")
     config.addinivalue_line("markers", "feature: feature module tests.")
     config.addinivalue_line("markers", "site: site module tests.")
+    config.addinivalue_line("markers", "route: feature.route module tests.")
 
 
 @pytest.fixture
