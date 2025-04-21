@@ -1,4 +1,4 @@
-"""Tests for module rack.website."""
+"""Tests for module rack.site."""
 
 import inspect
 from typing import Any
