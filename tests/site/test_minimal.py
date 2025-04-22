@@ -1,6 +1,5 @@
 """Tests for module rack.site."""
 
-import inspect
 from typing import Any
 from typing import Dict
 
@@ -8,26 +7,20 @@ import pytest
 from flask import Flask
 from pytest import MonkeyPatch
 
-from rack.site import BasicSite
-from rack.site import Site
+from rack.site.minimal import BasicSite
 
 
 @pytest.fixture
 def mock_basic_website(monkeypatch: MonkeyPatch) -> BasicSite:
     """Provides a BasicSite instance with render_template mocked."""
     monkeypatch.setattr(
-        "rack.site.render_template", lambda template: f"Rendered {template}"
+        "rack.site.minimal.render_template", lambda template: f"Rendered {template}"
     )
     return BasicSite()
 
 
 @pytest.mark.site
-def test_site_is_abstract() -> None:
-    """Site should be abstract."""
-    assert inspect.isabstract(Site)
-
-
-@pytest.mark.site
+@pytest.mark.minimal
 def test_index_route_is_registered(mock_basic_website: BasicSite) -> None:
     """Check that the index route is registered correctly."""
     # test client
@@ -40,6 +33,7 @@ def test_index_route_is_registered(mock_basic_website: BasicSite) -> None:
 
 
 @pytest.mark.site
+@pytest.mark.minimal
 def test_repr_contains_expected_info(mock_basic_website: BasicSite) -> None:
     """Method __repr__ should include route info and folder paths."""
     # get __repr__ method return value
@@ -53,6 +47,7 @@ def test_repr_contains_expected_info(mock_basic_website: BasicSite) -> None:
 
 
 @pytest.mark.site
+@pytest.mark.minimal
 def test_index_route_property_returns_route(mock_basic_website: BasicSite) -> None:
     """BasicSite.index_route should return a Route instance."""
     # get index route set
@@ -65,6 +60,7 @@ def test_index_route_property_returns_route(mock_basic_website: BasicSite) -> No
 
 
 @pytest.mark.site
+@pytest.mark.minimal
 def test_configure_updates_folders(mock_basic_website: BasicSite) -> None:
     """Test that configure sets static and template folders."""
     # update dirs
@@ -82,6 +78,7 @@ def test_configure_updates_folders(mock_basic_website: BasicSite) -> None:
 
 
 @pytest.mark.site
+@pytest.mark.minimal
 def test_register_features_does_not_duplicate_routes(
     mock_basic_website: BasicSite,
 ) -> None:
@@ -100,6 +97,7 @@ def test_register_features_does_not_duplicate_routes(
 
 
 @pytest.mark.site
+@pytest.mark.minimal
 def test_run_invokes_flask_run(
     monkeypatch: MonkeyPatch, mock_basic_website: BasicSite
 ) -> None:

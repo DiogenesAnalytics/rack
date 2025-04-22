@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from rack.site import Site
+from rack.site.base import Site
 from rack.utils import discover_sites
 from rack.utils import find_site_subclasses
 from rack.utils import load_module_from_file

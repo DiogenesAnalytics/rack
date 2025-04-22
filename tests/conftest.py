@@ -15,6 +15,7 @@ def pytest_configure(config: pytest.Config) -> None:
     config.addinivalue_line("markers", "feature: feature module tests.")
     config.addinivalue_line("markers", "site: site module tests.")
     config.addinivalue_line("markers", "route: feature.route module tests.")
+    config.addinivalue_line("markers", "minimal: site.minimal module tests.")
 
 
 @pytest.fixture
@@ -29,7 +30,7 @@ def mock_rack_directory(tmp_path: Path) -> Path:
     mock_file_1.write_text(
         dedent(
             """
-        from rack.site import Site
+        from rack.site.base import Site
 
         class MyWebsite(Site):
             pass
@@ -41,7 +42,7 @@ def mock_rack_directory(tmp_path: Path) -> Path:
     mock_file_2.write_text(
         dedent(
             """
-        from rack.site import Site
+        from rack.site.base import Site
 
         class AnotherWebsite(Site):
             pass

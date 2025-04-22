@@ -10,7 +10,7 @@ from typing import List
 from typing import Type
 from typing import Union
 
-from rack.site import Site
+from rack.site.base import Site
 
 
 def resolve_root_path(base: Union[str, Path]) -> Path:
