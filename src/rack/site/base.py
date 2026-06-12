@@ -4,8 +4,8 @@ from abc import ABC
 from abc import abstractmethod
 from pathlib import Path
 from typing import Any
-from typing import Iterable
 from typing import Optional
+from typing import Sequence
 from typing import Union
 
 from flask import Flask
@@ -36,7 +36,7 @@ class Site(ABC):
         if template_folder is not None:
             self.app.template_folder = str(template_folder)
 
-    def register_features(self, features: Iterable[Feature]) -> None:
+    def register_features(self, features: Sequence[Feature]) -> None:
         """Register each feature with the Flask app."""
         for feature in features:
             feature.register(self.app)
