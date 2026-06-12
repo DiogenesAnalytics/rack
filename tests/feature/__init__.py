@@ -1,1 +1,1 @@
-"""Test suite for the `rack.feature` subpackage."""
+"""Test suite for the `rack.feature.bundle` subpackage."""

@@ -4,6 +4,7 @@ from pathlib import Path
 from textwrap import dedent
 
 import pytest
+from flask import Flask
 
 
 def pytest_configure(config: pytest.Config) -> None:
@@ -16,6 +17,7 @@ def pytest_configure(config: pytest.Config) -> None:
     config.addinivalue_line("markers", "site: site module tests.")
     config.addinivalue_line("markers", "route: feature.route module tests.")
     config.addinivalue_line("markers", "minimal: site.minimal module tests.")
+    config.addinivalue_line("markers", "bundle: feature.route.bundle module tests.")
 
 
 @pytest.fixture
@@ -51,3 +53,11 @@ def mock_rack_directory(tmp_path: Path) -> Path:
     )
 
     return mock_dir
+
+
+@pytest.fixture
+def flask_app() -> Flask:
+    """Return a fresh Flask application for feature registration tests."""
+    app = Flask(__name__)
+    app.config["TESTING"] = True
+    return app
