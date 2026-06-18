@@ -34,6 +34,13 @@ class Route(Feature, ABC):
         """Get the view function for the route."""
         pass
 
+    def register(self, app: Flask) -> None:
+        """Register the route with the Flask application."""
+        app.add_url_rule(
+            self.path,
+            view_func=self.view_func,
+        )
+
 
 class DynamicRoute(Route):
     """A route with a user-defined view function."""
@@ -54,10 +61,6 @@ class DynamicRoute(Route):
     def view_func(self) -> Callable[..., Union[str, Response]]:
         """Get the view function for the route."""
         return self._view_func
-
-    def register(self, app: Flask) -> None:
-        """Register the route with the Flask app."""
-        app.add_url_rule(self.path, view_func=self.view_func)
 
     def __repr__(self) -> str:
         """Return a string representation of DynamicRoute."""
@@ -177,11 +180,6 @@ class AutoRoute(Route):
         """Get the view function for the actual route object."""
         # delegate to the selected route's view_func
         return self._route_object.view_func
-
-    def register(self, app: Flask) -> None:
-        """Use actual route object to register with the Flask app."""
-        # register the route object
-        self._route_object.register(app)
 
     def __repr__(self) -> str:
         """Return a string representation of AutoRoute."""
